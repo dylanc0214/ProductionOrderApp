@@ -7,24 +7,32 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+// Import the DB
+import { initDatabase } from './src/database/db';
+
 // Create a stack navigator
 const Stack = createNativeStackNavigator();
 
-// FIX: Changed <></> to <View>
+// Temp Screen
 const DashboardScreen = () => (
   <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
     <Text>Dashboard Work in Progress</Text>
   </View>
 );
-
 const CreatePOScreen = () => (
   <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
     <Text>Create PO Work in Progress</Text>
   </View>
 );
 
-// 
+// Main App Component
 export default function App() {
+  
+  // Initialize SQLite when App launches
+  useEffect(() => {
+    initDatabase();
+  }, []);
+
   return (
     <SafeAreaProvider>
       <PaperProvider>
