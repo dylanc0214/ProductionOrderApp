@@ -1,10 +1,10 @@
 // POManager/src/screens/DashboardScreen.tsx
 // Import necessary dependencies and components
 import React, { useState, useCallback, useEffect } from 'react';
-import { View, FlatList, StyleSheet, ScrollView } from 'react-native';
-import { Text, Card, Chip, FAB, ActivityIndicator, Badge, Button } from 'react-native-paper';
+import { View, FlatList, StyleSheet, ScrollView, Alert } from 'react-native';
+import { Text, Card, Chip, FAB, ActivityIndicator, Badge, Button, IconButton } from 'react-native-paper';
 import { useFocusEffect } from '@react-navigation/native';
-import { getProductionOrders, updatePOStatus, ProductionOrder } from '../database/db';
+import { getProductionOrders, updatePOStatus, ProductionOrder, deleteProductionOrder } from '../database/db';
 
 // DashboardScreen Component
 export default function DashboardScreen({ navigation }: any) {
@@ -70,6 +70,28 @@ export default function DashboardScreen({ navigation }: any) {
         setOrders(updatedOrders);
     };
 
+    // Handle Delete Function
+    const handleDelete = (id: number) => {
+        Alert.alert(
+        "Delete Order",
+        "Are you sure you want to delete this order?",
+        [
+            { text: "Cancel", style: "cancel" },
+            { 
+            text: "Delete", 
+            style: "destructive",
+            onPress: () => {
+                deleteProductionOrder(id);
+                // Refresh list immediately
+                const updatedList = orders.filter(item => item.id !== id);
+                setOrders(updatedList);
+                setFilteredOrders(updatedList); // Update filter view too
+            }
+            }
+        ]
+        );
+    };
+
     // Render Item
     const renderItem = ({ item }: { item: ProductionOrder }) => {
         const isCompleted = item.status === 'Completed';
@@ -78,6 +100,7 @@ export default function DashboardScreen({ navigation }: any) {
         return (
         <Card style={[styles.card, isCompleted && { opacity: 0.7 }]}>
             <Card.Content>
+            {/* Row for Header with Goods Name and Status Chip */}
             <View style={styles.header}>
                 <Text variant="titleMedium" style={{ fontWeight: 'bold' }}>{item.finished_goods}</Text>
                 <Chip 
@@ -90,15 +113,32 @@ export default function DashboardScreen({ navigation }: any) {
                 </Chip>
             </View>
             
+            {/* Row for Quantity and Due Date */}
             <View style={styles.row}>
-                <Text variant="bodyMedium" style={{ fontWeight: 'bold', marginRight: 5 }}>Qty:</Text>
-                <Badge size={24} style={{ backgroundColor: '#2196F3' }}>{item.produced_quantity}</Badge>
+                <Text variant="bodyMedium" style={{ fontWeight: 'bold', marginRight: 5 }}>Quantity:</Text>
+                <Badge size={24} style={{ backgroundColor: '#999999' }}>{item.produced_quantity}</Badge>
                 <Text variant="bodySmall" style={{ marginLeft: 10 }}>📅 {item.due_date}</Text>
             </View>
 
-            <Text variant="bodySmall" style={{ color: 'gray', marginTop: 8 }}>
-                Location: {item.storage_location}
-            </Text>
+            {/* Row for Location and Delete Button */}
+            <View style={{ 
+                flexDirection: 'row', 
+                justifyContent: 'space-between', 
+                alignItems: 'center', // Center vertically
+                marginTop: 10 
+            }}>
+                <Text variant="bodySmall" style={{ color: 'gray', flex: 1 }}>
+                📍 {item.storage_location}
+                </Text>
+                
+                <IconButton 
+                icon="delete" 
+                size={20} 
+                iconColor="#ef5350"
+                onPress={() => handleDelete(item.id)}
+                style={{ margin: 0 }} // Remove extra margin so it hugs the right side
+                />
+            </View>
             </Card.Content>
         </Card>
         );
@@ -117,6 +157,7 @@ export default function DashboardScreen({ navigation }: any) {
                 onPress={() => setStatusFilter(status)}
                 style={[styles.filterChip, { borderRadius: 10 }]} 
                 textStyle={{ fontWeight: statusFilter === status ? 'bold' : 'normal' }}
+                selectedColor="white"
                 >
                 {status}
                 </Chip>
@@ -169,6 +210,7 @@ const styles = StyleSheet.create({
     },
     filterChip: {
         marginRight: 8,
+        backgroundColor: '#999999',
     },
     card: { 
         marginBottom: 12, 

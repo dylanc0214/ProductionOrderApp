@@ -73,3 +73,13 @@ export const updatePOStatus = (id: number, status: string) => {
         console.error('Error updating status:', error);
     }
 };
+
+// Delete a PO
+export const deleteProductionOrder = (id: number) => {
+  try {
+    db.runSync('DELETE FROM production_orders WHERE id = ?', [id]);
+  } catch (error) {
+    console.error('Error deleting PO:', error);
+    throw error;
+  }
+};
