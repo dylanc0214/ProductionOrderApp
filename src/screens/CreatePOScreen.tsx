@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { View, ScrollView, StyleSheet, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { TextInput, Button, HelperText } from 'react-native-paper';
 import { addProductionOrder } from '../database/db';
+import * as Notifications from 'expo-notifications';
+import { SchedulableTriggerInputTypes } from 'expo-notifications';
 
 // CreatePOScreen Component
 export default function CreatePOScreen({ navigation }: any) {
@@ -44,7 +46,33 @@ export default function CreatePOScreen({ navigation }: any) {
         return true;
     };
 
-    const handleSave = () => {
+    // Schedule Notification
+    const scheduleReminder = async (orderTitle: string, dueDateString: string) => {
+        try {
+        const [year, month, day] = dueDateString.split('-').map(Number);
+        // Set trigger time to 9:00 AM on the due date
+        const triggerDate = new Date(year, month - 1, day, 9, 0, 0);
+
+        if (triggerDate.getTime() < Date.now()) return;
+
+        await Notifications.scheduleNotificationAsync({
+            content: {
+            title: "Production Due Today! 🏭",
+            body: `Order for ${orderTitle} is due today. Check status!`,
+            },
+            // FIX: Explicitly define the trigger type and date
+            trigger: { 
+            type: SchedulableTriggerInputTypes.DATE,
+            date: triggerDate 
+            },
+        });
+        console.log("Notification scheduled for:", triggerDate);
+        } catch (error) {
+        console.log("Notification Error:", error);
+        }
+    };
+
+    const handleSave = async () => {
         const isDateValid = validateDate(date);
 
         const newErrors = {
@@ -73,7 +101,9 @@ export default function CreatePOScreen({ navigation }: any) {
             date,
             location
         );
-        Alert.alert("Success", "Order created successfully!", [
+        // Schedule the notification
+        await scheduleReminder(goods, date);
+        Alert.alert("Success", "Order created and Reminder set successfully!", [
             { text: "OK", onPress: () => navigation.goBack() }
         ]);
         } catch (e) {
