@@ -88,12 +88,12 @@ export default function AIAssistantScreen() {
         <Card.Title 
           title="SuDu AI Assistant" 
           subtitle="Production Insights"
-          left={(props) => <Avatar.Icon {...props} icon="robot" style={{ backgroundColor: '#6200ee' }} />}
+          left={(props) => <Avatar.Icon {...props} icon="robot" style={{ backgroundColor: '#999999' }} />}
         />
         <Card.Content>
           {loading ? (
             <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#6200ee" />
+              <ActivityIndicator size="large" color="#999999" />
               <Text style={{ marginTop: 10 }}>Analyzing factory data...</Text>
             </View>
           ) : (
@@ -105,7 +105,7 @@ export default function AIAssistantScreen() {
           )}
         </Card.Content>
         <Card.Actions>
-          <Button mode="text" onPress={fetchAIInsights} disabled={loading}>
+          <Button mode="text" onPress={fetchAIInsights} disabled={loading} textColor='#999999'>
             Refresh Analysis
           </Button>
         </Card.Actions>
