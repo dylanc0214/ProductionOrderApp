@@ -10,15 +10,13 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 // Import the DB
 import { initDatabase } from './src/database/db';
 
+// Import Screens
+import DashboardScreen from './src/screens/DashboardScreen';
+
 // Create a stack navigator
 const Stack = createNativeStackNavigator();
 
 // Temp Screen
-const DashboardScreen = () => (
-  <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-    <Text>Dashboard Work in Progress</Text>
-  </View>
-);
 const CreatePOScreen = () => (
   <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
     <Text>Create PO Work in Progress</Text>
@@ -27,12 +25,6 @@ const CreatePOScreen = () => (
 
 // Main App Component
 export default function App() {
-  
-  // Initialize SQLite when App launches
-  useEffect(() => {
-    initDatabase();
-  }, []);
-
   return (
     <SafeAreaProvider>
       <PaperProvider>
