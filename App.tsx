@@ -12,16 +12,10 @@ import { initDatabase } from './src/database/db';
 
 // Import Screens
 import DashboardScreen from './src/screens/DashboardScreen';
+import CreatePOScreen from './src/screens/CreatePOScreen';
 
 // Create a stack navigator
 const Stack = createNativeStackNavigator();
-
-// Temp Screen
-const CreatePOScreen = () => (
-  <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-    <Text>Create PO Work in Progress</Text>
-  </View>
-);
 
 // Main App Component
 export default function App() {
