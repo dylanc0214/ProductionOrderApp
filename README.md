@@ -2,38 +2,46 @@
 
 A mobile application built with React Native (Expo) to manage Production Orders, featuring local SQLite storage and an AI assistant simulation.
 
+## Features
+- **Dashboard**: Show all the orders, Filter by using status
+- **Filtering**: Filter orders by using 'All', 'Pending', 'In Progress', and 'Completed'
+- **Create Order**: Form with validation
+- **Local Database**: Using expo-sqlite to store the orders
+- **AI Assistant**: Integrate with Google Gemini API to provide insights
+
+
+
 ## 1. Setup Instructions
 1. Clone the repository.
+    ```bash
+    git clone https://github.com/dylanc0214/ProductionOrderApp
+    cd POManager
 2. Install dependencies:
-   ```bash
-   npm install
+    ```bash
+    npm install
 3. Run the program:
-   ```bash
-   npx expo start
+    ```bash
+    npx expo start
+    ```
 
 ## 2. Technical Notes
 ### Architecture
-- **screens/**  
-  Contains all main UI screens such as Dashboard and Create PO.
-
-- **components/**  
-  Reusable UI components like cards and buttons.
-
-- **database/**  
-  Handles SQLite initialization and database operations.
-
-- **context/**  
-  Manages global state using React Context for Production Orders.
-
-- **types/**  
-  Centralized TypeScript type definitions to ensure type safety.
+- **src/screens/**: Contains all main UI screens (Dashboard, CreatePO, AI Assistant).
+- **src/database/**: Handles SQLite initialization and direct CRUD operations.
+*(Note: I kept the code inside the screens files instead of creating extra folders like `components` or `types`. This makes the project easier to navigate since it is a small app.)*
 
 ### Challenges & Assumptions
-- Faced Error about "Render Error"
+#### Challenges
+- Faced a compatibility issue with `react-native-screens` which required a version downgrade.
+- Google Gemini API `gemini-pro` and `1.5-flash` models returned errors; solved by switching to the newer `gemini-2.5-flash-lite`.
+##### Assumptions
+- The API Key is hardcoded for demo purposes (in a real app, this would be in `.env`).
+- Dates are handled as simple strings (YYYY-MM-DD) without install any library
 
 ## 3. AI Usage Log
+I used AI tools (Gemini and Jules) to assist in the development process. Below is the log of key prompts and how the output was applied.
 | Prompt | AI Response Summary | How I Applied It |
-|------|---------------------|------------------|
+| :--- | :--- | :--- |
 | Best folder structure for React Native Expo app with TypeScript | Suggested using a `src` directory with separation between screens, components, services, and types | Adopted a `src`-based structure to keep UI, logic, and data management clean and scalable |
 | Give me the command for install the whole dependencies to setup the environment: I will use React Native, Expo SQLite, React Context, React Native Paper, React Navigation | Provided a combined install command covering navigation, SQLite, UI library, and safe-area dependencies | Used the command to install all required dependencies efficiently in one step |
 | Basic App.tsx setup for Expo with React Navigation and React Native Paper | Provided a minimal root component with NavigationContainer, PaperProvider, and SafeAreaProvider | Used the structure as the base of the app and planned to register screens in later phases |
@@ -49,3 +57,5 @@ A mobile application built with React Native (Expo) to manage Production Orders,
 | Create a form for Production Orders with fields for Goods, Quantity, Materials, Date, and Location. Include validation. | Generated CreatePOScreen.tsx using TextInput and HelperText. Suggested using KeyboardAvoidingView to prevent the keyboard from blocking inputs. | Copied the component structure. Used useState for form handling and implemented the suggested validation logic. |
 | How do I validate a date string YYYY-MM-DD without an external library | Provided a simple Regex: /^\d{4}-\d{2}-\d{2}$/ to check the format. | Applied this regex in the validateDate function |
 | When I type a invalid date such as 2025-12-32, it still proceeds and created successfully. | Update the validateDate function to parse the numbers and ensure JavaScript doesn't "auto-correct" invalid dates (like turning Dec 32 into Jan 1). | Pasted the logic into my existing code |
+| Implement a mock AI assistant screen I will use Gemini API and here is my key... and give me the full code | Provided code for AIAssistantScreen that fetches data from getProductionOrders(), formats it into a prompt string, and calls the Gemini REST API (gemini-1.5-flash) using fetch. Included loading states and UI. | Created the new screen file with the provided API code. Updated App.tsx navigation and added an "Ask AI" button to the Dashboard header |
+| The AI screen says "Sorry, I couldn't analyze...". How do I debug this? | Identified that the generic error message was masking the actual API error response (likely inside result.error). Suggested refactoring the function to check for result.error and log the full JSON response. | Updated AIAssistantScreen.tsx to handle result.error explicitly and display the specific error message (e.g., Invalid API Key) on the UI. | API Error: models/gemini-pro is not found... | Explained that gemini-pro and 1.5-flash are likely deprecated or renamed in the current API version. Recommended using the newer gemini-2.0-flash model. | Found out that the model that AI gave is not exist so I found out replace with a real one |

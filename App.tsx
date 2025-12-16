@@ -13,6 +13,7 @@ import { initDatabase } from './src/database/db';
 // Import Screens
 import DashboardScreen from './src/screens/DashboardScreen';
 import CreatePOScreen from './src/screens/CreatePOScreen';
+import AIAssistantScreen from './src/screens/AIAssistantScreen'
 
 // Create a stack navigator
 const Stack = createNativeStackNavigator();
@@ -33,6 +34,11 @@ export default function App() {
               name="CreatePO" 
               component={CreatePOScreen} 
               options={{ title: 'New Order' }} 
+            />
+            <Stack.Screen 
+              name="AIAssistant" 
+              component={AIAssistantScreen} 
+              options={{ title: 'AI Insights' }} 
             />
           </Stack.Navigator>
         </NavigationContainer>

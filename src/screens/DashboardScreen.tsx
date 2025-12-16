@@ -2,12 +2,27 @@
 // Import necessary dependencies and components
 import React, { useState, useCallback, useEffect } from 'react';
 import { View, FlatList, StyleSheet, ScrollView } from 'react-native';
-import { Text, Card, Chip, FAB, ActivityIndicator, Badge } from 'react-native-paper';
+import { Text, Card, Chip, FAB, ActivityIndicator, Badge, Button } from 'react-native-paper';
 import { useFocusEffect } from '@react-navigation/native';
 import { getProductionOrders, updatePOStatus, ProductionOrder } from '../database/db';
 
 // DashboardScreen Component
 export default function DashboardScreen({ navigation }: any) {
+    React.useLayoutEffect(() => {
+        navigation.setOptions({
+        headerRight: () => (
+            <Button 
+            onPress={() => navigation.navigate('AIAssistant')} 
+            mode="text" 
+            textColor="#999999"
+            icon="robot"
+            compact
+            >
+            Ask AI
+            </Button>
+        ),
+        });
+    }, [navigation]);
     // State variables
     const [orders, setOrders] = useState<ProductionOrder[]>([]);
     const [filteredOrders, setFilteredOrders] = useState<ProductionOrder[]>([]);
