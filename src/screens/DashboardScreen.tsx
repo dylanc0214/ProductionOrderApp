@@ -1,14 +1,16 @@
 // POManager/src/screens/DashboardScreen.tsx
 // Import necessary dependencies and components
-import React, { useState, useCallback, useEffect } from 'react';
-import { View, FlatList, StyleSheet, ScrollView, Alert } from 'react-native';
-import { Text, Card, Chip, FAB, ActivityIndicator, Badge, Button, IconButton } from 'react-native-paper';
-import { useFocusEffect } from '@react-navigation/native';
-import { getProductionOrders, updatePOStatus, ProductionOrder, deleteProductionOrder } from '../database/db';
+import React, { useState, useCallback, useEffect } from 'react'; // React and hooks
+import { View, FlatList, StyleSheet, ScrollView, Alert } from 'react-native'; // React Native components
+import { Text, Card, Chip, FAB, ActivityIndicator, Badge, Button, IconButton } from 'react-native-paper'; // React Native Paper components
+import { useFocusEffect } from '@react-navigation/native'; // Navigation hook
+import { getProductionOrders, updatePOStatus, ProductionOrder, deleteProductionOrder } from '../database/db'; // Database functions and types
 
 // DashboardScreen Component
-export default function DashboardScreen({ navigation }: any) {
+export default function DashboardScreen({ navigation }: any) { // Navigation prop
+    // Set up header with AI Assistant button
     React.useLayoutEffect(() => {
+        // Add "Ask AI" button to header
         navigation.setOptions({
         headerRight: () => (
             <Button 
@@ -22,22 +24,22 @@ export default function DashboardScreen({ navigation }: any) {
             </Button>
         ),
         });
-    }, [navigation]);
+    }, [navigation]); // Dependency on navigation
     // State variables
-    const [orders, setOrders] = useState<ProductionOrder[]>([]);
-    const [filteredOrders, setFilteredOrders] = useState<ProductionOrder[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [orders, setOrders] = useState<ProductionOrder[]>([]); // All orders
+    const [filteredOrders, setFilteredOrders] = useState<ProductionOrder[]>([]); // Filtered orders
+    const [loading, setLoading] = useState(true); // Loading state
     
     // Filter State
     const [statusFilter, setStatusFilter] = useState('All');
 
     // Load Data Function
     const loadData = useCallback(() => {
-        setLoading(true);
-        const data = getProductionOrders();
-        setOrders(data);
-        setLoading(false);
-    }, []);
+        setLoading(true); // Start loading
+        const data = getProductionOrders(); // Fetch orders from DB
+        setOrders(data); // Update state
+        setLoading(false); // End loading
+    }, []); // No dependencies
 
     // Refresh data when screen is focused
     useFocusEffect(
@@ -48,26 +50,28 @@ export default function DashboardScreen({ navigation }: any) {
 
     // Update filtered orders when filter or orders change
     useEffect(() => {
-        if (statusFilter === 'All') {
-        setFilteredOrders(orders);
-        } else {
-        const filtered = orders.filter(item => item.status === statusFilter);
-        setFilteredOrders(filtered);
+        if (statusFilter === 'All') { // No filter
+        setFilteredOrders(orders); // Show all orders
+        } else { // Apply filter
+        const filtered = orders.filter(item => item.status === statusFilter); // Filtered list
+        setFilteredOrders(filtered); // Update state
         }
-    }, [statusFilter, orders]);
+    }, [statusFilter, orders]); // Dependencies
 
     // Handle Status Update
-    const handleStatusUpdate = (id: number, currentStatus: string) => {
-        let newStatus = 'Pending';
-        if (currentStatus === 'Pending') newStatus = 'In Progress';
-        else if (currentStatus === 'In Progress') newStatus = 'Completed';
+    const handleStatusUpdate = (id: number, currentStatus: string) => { // Determine new status
+        let newStatus = 'Pending'; // Default
+        if (currentStatus === 'Pending') newStatus = 'In Progress'; // Next status
+        else if (currentStatus === 'In Progress') newStatus = 'Completed'; // Next status
         
+        // Update in database
         updatePOStatus(id, newStatus);
         
-        const updatedOrders = orders.map(item => 
-        item.id === id ? { ...item, status: newStatus as any } : item
+        // Update local state
+        const updatedOrders = orders.map(item => // Map through orders
+        item.id === id ? { ...item, status: newStatus as any } : item // Update status
         );
-        setOrders(updatedOrders);
+        setOrders(updatedOrders); // Update state
     };
 
     // Handle Delete Function
@@ -83,8 +87,8 @@ export default function DashboardScreen({ navigation }: any) {
             onPress: () => {
                 deleteProductionOrder(id);
                 // Refresh list immediately
-                const updatedList = orders.filter(item => item.id !== id);
-                setOrders(updatedList);
+                const updatedList = orders.filter(item => item.id !== id); // Filter out deleted item
+                setOrders(updatedList); // Update main list
                 setFilteredOrders(updatedList); // Update filter view too
             }
             }
@@ -94,20 +98,21 @@ export default function DashboardScreen({ navigation }: any) {
 
     // Render Item
     const renderItem = ({ item }: { item: ProductionOrder }) => {
-        const isCompleted = item.status === 'Completed';
-        const isInProgress = item.status === 'In Progress';
+        const isCompleted = item.status === 'Completed'; // Check if completed
+        const isInProgress = item.status === 'In Progress'; // Check if in progress
 
         return (
-        <Card style={[styles.card, isCompleted && { opacity: 0.7 }]}>
+        // Card for each production order
+        <Card style={[styles.card, isCompleted && { opacity: 0.7 }]}> 
             <Card.Content>
             {/* Row for Header with Goods Name and Status Chip */}
             <View style={styles.header}>
                 <Text variant="titleMedium" style={{ fontWeight: 'bold' }}>{item.finished_goods}</Text>
                 <Chip 
-                icon={isCompleted ? "check" : isInProgress ? "progress-clock" : "clock-outline"}
-                mode="flat" 
-                onPress={() => handleStatusUpdate(item.id, item.status)}
-                style={{ backgroundColor: isCompleted ? '#e8f5e9' : isInProgress ? '#fff3e0' : '#ffebee' }}
+                icon={isCompleted ? "check" : isInProgress ? "progress-clock" : "clock-outline"} // Status icon
+                mode="flat" // Flat style
+                onPress={() => handleStatusUpdate(item.id, item.status)} // Update status on press
+                style={{ backgroundColor: isCompleted ? '#e8f5e9' : isInProgress ? '#fff3e0' : '#ffebee' }} // Color based on status
                 >
                 {item.status}
                 </Chip>
@@ -135,7 +140,7 @@ export default function DashboardScreen({ navigation }: any) {
                 icon="delete" 
                 size={20} 
                 iconColor="#ef5350"
-                onPress={() => handleDelete(item.id)}
+                onPress={() => handleDelete(item.id)} // Delete action
                 style={{ margin: 0 }} // Remove extra margin so it hugs the right side
                 />
             </View>
@@ -148,14 +153,15 @@ export default function DashboardScreen({ navigation }: any) {
         <View style={styles.container}>
         {/* Filter Section */}
         <View style={styles.filterContainer}>
+            {/* Filter Chips */}
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {['All', 'Pending', 'In Progress', 'Completed'].map((status) => (
+            {['All', 'Pending', 'In Progress', 'Completed'].map((status) => ( // Map through statuses
                 <Chip
-                key={status}
-                mode={statusFilter === status ? 'flat' : 'outlined'}
-                selected={statusFilter === status}
-                onPress={() => setStatusFilter(status)}
-                style={[styles.filterChip, { borderRadius: 10 }]} 
+                key={status} // Unique key
+                mode={statusFilter === status ? 'flat' : 'outlined'} // Highlight selected
+                selected={statusFilter === status} // Selected state
+                onPress={() => setStatusFilter(status)} // Update filter
+                style={[styles.filterChip, { borderRadius: 10 }]}  // Rounded corners
                 textStyle={{ fontWeight: statusFilter === status ? 'bold' : 'normal' }}
                 selectedColor="white"
                 >

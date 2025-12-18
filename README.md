@@ -62,6 +62,7 @@ I used AI tools (Gemini and Jules) to assist in the development process. Below i
 | How to add push/local notifications for upcoming due dates. | Suggested using expo-notifications. Provided code to request permissions in App.tsx and schedule a notification using Notifications.scheduleNotificationAsync when a new order is created. | Installed the library and integrated the scheduling logic into the handleSave function of CreatePOScreen.tsx, setting the trigger for 9:00 AM on the due date. |
 | How to delete the Orders | Provided the DELETE SQL function for db.ts and the UI code to add a trash icon with an Alert confirmation in DashboardScreen.tsx. | Implemented deleteProductionOrder and updated the card UI to include the delete button and logic. |
 | How to create live expo demo link (e.g., https://expo.dev/@username/po-manager) | Explained how to do it in my terminal to get that URL https://expo.dev/@username/po-manager | I copy and paste the command into my terminal and set it up |
+| Can you help me add Dark mode toggle | Explained creating a ThemeContext to manage state and updating App.tsx to merge React Native Paper and Navigation themes. Provided code to add a toggle button in the Dashboard header. | It seems like too difficult for me to include the ThemeContext into my App.tsx and DashboardScreen so I undo it. |
 
 ## Screenshots
 ![App Dashboard with Empty Order](./assets/dashboard-with-empty-order.PNG)
